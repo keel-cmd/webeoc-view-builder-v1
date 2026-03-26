@@ -1,0 +1,142 @@
+{
+  "id": "example-001",
+  "name": "Incident Report Form",
+  "description": "Sample incident report form built with WebEOC View Builder",
+  "rootNodes": [
+    {
+      "id": "section-1",
+      "type": "section",
+      "props": {
+        "title": "Incident Details",
+        "padding": "16px",
+        "backgroundColor": "#f9fafb"
+      },
+      "children": [
+        {
+          "id": "row-1",
+          "type": "row",
+          "props": { "gap": "16px" },
+          "children": [
+            {
+              "id": "col-1",
+              "type": "column",
+              "props": { "flex": "1", "gap": "8px" },
+              "children": [
+                {
+                  "id": "incident-title",
+                  "type": "text-input",
+                  "props": {
+                    "label": "Incident Title",
+                    "placeholder": "Enter incident title",
+                    "required": true
+                  }
+                }
+              ]
+            },
+            {
+              "id": "col-2",
+              "type": "column",
+              "props": { "flex": "1", "gap": "8px" },
+              "children": [
+                {
+                  "id": "incident-date",
+                  "type": "date-input",
+                  "props": {
+                    "label": "Incident Date",
+                    "required": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "incident-type",
+          "type": "dropdown",
+          "props": {
+            "label": "Incident Type",
+            "required": true,
+            "options": ["Fire", "Flood", "Earthquake", "Hazmat", "Other"]
+          }
+        },
+        {
+          "id": "description",
+          "type": "textarea",
+          "props": {
+            "label": "Description",
+            "placeholder": "Describe the incident in detail",
+            "required": true,
+            "rows": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-2",
+      "type": "section",
+      "props": {
+        "title": "Contact Information",
+        "padding": "16px",
+        "backgroundColor": "#ffffff"
+      },
+      "children": [
+        {
+          "id": "contact-email",
+          "type": "email-input",
+          "props": {
+            "label": "Email",
+            "placeholder": "reporter@example.com",
+            "required": true
+          }
+        },
+        {
+          "id": "contact-phone",
+          "type": "phone-input",
+          "props": {
+            "label": "Phone",
+            "placeholder": "(555) 555-5555"
+          }
+        }
+      ]
+    },
+    {
+      "id": "section-3",
+      "type": "section",
+      "props": {
+        "title": "Supporting Documents",
+        "padding": "16px",
+        "backgroundColor": "#f9fafb"
+      },
+      "children": [
+        {
+          "id": "attachments",
+          "type": "file-upload",
+          "props": {
+            "label": "Attachments",
+            "accept": ".pdf,.jpg,.png,.doc,.docx",
+            "multiple": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "submit-label",
+      "type": "label",
+      "props": {
+        "text": "By submitting this form you confirm the information is accurate.",
+        "fontSize": "12px",
+        "fontWeight": "normal",
+        "color": "#6b7280"
+      }
+    },
+    {
+      "id": "submit-btn",
+      "type": "button",
+      "props": {
+        "text": "Submit Incident Report",
+        "variant": "primary",
+        "size": "md"
+      }
+    }
+  ]
+}
