@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_QJMeIgpOy1G3@ep-wild-tooth-an0mx5mp-pooler.c-6.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require\" npx prisma migrate dev --name init)"
+    ]
+  }
+}
