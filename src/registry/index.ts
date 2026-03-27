@@ -29,10 +29,11 @@ registerComponent({
   label: "Section",
   category: "layout",
   icon: "⬜",
-  defaultProps: { title: "Section", padding: "16px" },
+  defaultProps: { title: "Section", collapsible: true, defaultCollapsed: false },
   propertyDefinitions: [
     { key: "title", label: "Title", type: "text", defaultValue: "Section" },
-    { key: "padding", label: "Padding", type: "text", defaultValue: "16px" },
+    { key: "collapsible", label: "Collapsible", type: "boolean", defaultValue: true },
+    { key: "defaultCollapsed", label: "Start Collapsed", type: "boolean", defaultValue: false },
     { key: "backgroundColor", label: "Background Color", type: "color", defaultValue: "#ffffff" },
   ],
   acceptsChildren: true,
@@ -43,7 +44,7 @@ registerComponent({
   label: "Row",
   category: "layout",
   icon: "↔️",
-  defaultProps: { gap: "8px" },
+  defaultProps: { gap: "8px", className: "form-row" },
   propertyDefinitions: [
     { key: "gap", label: "Gap", type: "text", defaultValue: "8px" },
     { key: "alignItems", label: "Align Items", type: "select", defaultValue: "stretch", options: ["flex-start", "center", "flex-end", "stretch"] },
@@ -98,13 +99,14 @@ registerComponent({
   label: "Text Input",
   category: "form",
   icon: "🔤",
-  defaultProps: { label: "Text Input", placeholder: "", required: false, helperText: "" },
+  defaultProps: { label: "Text Input", placeholder: "", required: false, helperText: "", col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Text Input" },
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "helperText", label: "Helper Text", type: "text", defaultValue: "" },
     { key: "maxLength", label: "Max Length", type: "number", defaultValue: undefined },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -113,13 +115,14 @@ registerComponent({
   label: "Text Area",
   category: "form",
   icon: "📝",
-  defaultProps: { label: "Text Area", placeholder: "", required: false, rows: 4 },
+  defaultProps: { label: "Text Area", placeholder: "", required: false, rows: 4, col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Text Area" },
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "rows", label: "Rows", type: "number", defaultValue: 4 },
     { key: "helperText", label: "Helper Text", type: "text", defaultValue: "" },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -128,13 +131,14 @@ registerComponent({
   label: "Number",
   category: "form",
   icon: "🔢",
-  defaultProps: { label: "Number", placeholder: "", required: false, min: undefined, max: undefined },
+  defaultProps: { label: "Number", placeholder: "", required: false, min: undefined, max: undefined, col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Number" },
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "min", label: "Min Value", type: "number", defaultValue: undefined },
     { key: "max", label: "Max Value", type: "number", defaultValue: undefined },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -143,12 +147,13 @@ registerComponent({
   label: "Dropdown",
   category: "form",
   icon: "📋",
-  defaultProps: { label: "Dropdown", required: false, options: ["Option 1", "Option 2"], helperText: "" },
+  defaultProps: { label: "Dropdown", required: false, options: ["Option 1", "Option 2"], helperText: "", col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Dropdown" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "options", label: "Options (comma-separated)", type: "text", defaultValue: "Option 1,Option 2" },
     { key: "helperText", label: "Helper Text", type: "text", defaultValue: "" },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -157,11 +162,12 @@ registerComponent({
   label: "Checkbox",
   category: "form",
   icon: "☑️",
-  defaultProps: { label: "Checkbox", required: false, helperText: "" },
+  defaultProps: { label: "Checkbox", required: false, helperText: "", col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Checkbox" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "helperText", label: "Helper Text", type: "text", defaultValue: "" },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -170,11 +176,12 @@ registerComponent({
   label: "Radio",
   category: "form",
   icon: "🔘",
-  defaultProps: { label: "Radio Group", required: false, options: ["Option 1", "Option 2"] },
+  defaultProps: { label: "Radio Group", required: false, options: ["Option 1", "Option 2"], col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Radio Group" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "options", label: "Options (comma-separated)", type: "text", defaultValue: "Option 1,Option 2" },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -183,11 +190,12 @@ registerComponent({
   label: "Date",
   category: "form",
   icon: "📅",
-  defaultProps: { label: "Date", required: false },
+  defaultProps: { label: "Date", required: false, col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Date" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "helperText", label: "Helper Text", type: "text", defaultValue: "" },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -196,11 +204,12 @@ registerComponent({
   label: "Email",
   category: "form",
   icon: "📧",
-  defaultProps: { label: "Email", placeholder: "", required: false },
+  defaultProps: { label: "Email", placeholder: "", required: false, col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Email" },
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -209,11 +218,12 @@ registerComponent({
   label: "Phone",
   category: "form",
   icon: "📱",
-  defaultProps: { label: "Phone", placeholder: "", required: false },
+  defaultProps: { label: "Phone", placeholder: "", required: false, col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "Phone" },
     { key: "placeholder", label: "Placeholder", type: "text", defaultValue: "" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 
@@ -222,12 +232,13 @@ registerComponent({
   label: "File Upload",
   category: "form",
   icon: "📎",
-  defaultProps: { label: "File Upload", required: false, accept: "*", multiple: false },
+  defaultProps: { label: "File Upload", required: false, accept: "*", multiple: false, col: "col-6" },
   propertyDefinitions: [
     { key: "label", label: "Label", type: "text", defaultValue: "File Upload" },
     { key: "required", label: "Required", type: "boolean", defaultValue: false },
     { key: "accept", label: "Accept", type: "text", defaultValue: "*" },
     { key: "multiple", label: "Multiple Files", type: "boolean", defaultValue: false },
+    { key: "col", label: "Width", type: "select", defaultValue: "col-6", options: ["col-12", "col-6", "col-4", "col-3"] },
   ],
 });
 

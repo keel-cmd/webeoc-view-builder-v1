@@ -253,12 +253,12 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
     case "email-input":
     case "phone-input":
       return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+        <div className="px-0">
+          <label className="block text-xs font-medium text-gray-500 mb-0.5 uppercase tracking-wide" style={{ fontSize: "10px" }}>
             {(p.label as string) ?? "Input"}
-            {Boolean(p.required) && <span className="text-red-500 ml-0.5">*</span>}
+            {Boolean(p.required) && <span className="text-red-400 ml-0.5">*</span>}
           </label>
-          <div className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-400 bg-gray-50">
+          <div className="border-0 border-b border-gray-300 text-xs text-gray-400 bg-transparent py-1 w-full" style={{ borderBottomWidth: "1.5px" }}>
             {(p.placeholder as string) || "Text input…"}
           </div>
         </div>
@@ -266,12 +266,12 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "textarea":
       return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+        <div className="px-0">
+          <label className="block text-xs font-medium text-gray-500 mb-0.5 uppercase tracking-wide" style={{ fontSize: "10px" }}>
             {(p.label as string) ?? "Text Area"}
-            {Boolean(p.required) && <span className="text-red-500 ml-0.5">*</span>}
+            {Boolean(p.required) && <span className="text-red-400 ml-0.5">*</span>}
           </label>
-          <div className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-400 bg-gray-50 h-12">
+          <div className="border-0 border-b border-gray-300 text-xs text-gray-400 bg-transparent py-1 w-full h-10" style={{ borderBottomWidth: "1.5px" }}>
             {(p.placeholder as string) || "Text area…"}
           </div>
         </div>
@@ -279,12 +279,12 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "number-input":
       return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+        <div className="px-0">
+          <label className="block text-xs font-medium text-gray-500 mb-0.5 uppercase tracking-wide" style={{ fontSize: "10px" }}>
             {(p.label as string) ?? "Number"}
-            {Boolean(p.required) && <span className="text-red-500 ml-0.5">*</span>}
+            {Boolean(p.required) && <span className="text-red-400 ml-0.5">*</span>}
           </label>
-          <div className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-400 bg-gray-50">
+          <div className="border-0 border-b border-gray-300 text-xs text-gray-400 bg-transparent py-1 w-full" style={{ borderBottomWidth: "1.5px" }}>
             0
           </div>
         </div>
@@ -292,12 +292,12 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "date-input":
       return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+        <div className="px-0">
+          <label className="block text-xs font-medium text-gray-500 mb-0.5 uppercase tracking-wide" style={{ fontSize: "10px" }}>
             {(p.label as string) ?? "Date"}
-            {Boolean(p.required) && <span className="text-red-500 ml-0.5">*</span>}
+            {Boolean(p.required) && <span className="text-red-400 ml-0.5">*</span>}
           </label>
-          <div className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-400 bg-gray-50">
+          <div className="border-0 border-b border-gray-300 text-xs text-gray-400 bg-transparent py-1 w-full" style={{ borderBottomWidth: "1.5px" }}>
             MM/DD/YYYY
           </div>
         </div>
@@ -305,12 +305,12 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "dropdown":
       return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+        <div className="px-0">
+          <label className="block text-xs font-medium text-gray-500 mb-0.5 uppercase tracking-wide" style={{ fontSize: "10px" }}>
             {(p.label as string) ?? "Dropdown"}
-            {Boolean(p.required) && <span className="text-red-500 ml-0.5">*</span>}
+            {Boolean(p.required) && <span className="text-red-400 ml-0.5">*</span>}
           </label>
-          <div className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-400 bg-gray-50 flex justify-between">
+          <div className="border-0 border-b border-gray-300 text-xs text-gray-400 bg-transparent py-1 w-full flex justify-between" style={{ borderBottomWidth: "1.5px" }}>
             <span>Select…</span><span>▼</span>
           </div>
         </div>
@@ -318,18 +318,20 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "checkbox":
       return (
-        <label className="flex items-center gap-2 text-xs text-gray-600">
-          <div className="w-3 h-3 border border-gray-300 rounded bg-gray-50" />
-          {(p.label as string) ?? "Checkbox"}
-        </label>
+        <div className="px-0">
+          <label className="flex items-center gap-2 text-xs text-gray-600 cursor-default">
+            <div className="w-3 h-3 border border-gray-300 rounded bg-gray-50 shrink-0" />
+            {(p.label as string) ?? "Checkbox"}
+          </label>
+        </div>
       );
 
     case "radio":
       return (
-        <div>
-          <p className="text-xs font-medium text-gray-600 mb-1">{(p.label as string) ?? "Radio"}</p>
+        <div className="px-0">
+          <p className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide" style={{ fontSize: "10px" }}>{(p.label as string) ?? "Radio"}</p>
           <div className="flex items-center gap-1 text-xs text-gray-400">
-            <div className="w-3 h-3 rounded-full border border-gray-300" />
+            <div className="w-3 h-3 rounded-full border border-gray-300 shrink-0" />
             Option 1
           </div>
         </div>
@@ -337,11 +339,11 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "file-upload":
       return (
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+        <div className="px-0">
+          <label className="block text-xs font-medium text-gray-500 mb-0.5 uppercase tracking-wide" style={{ fontSize: "10px" }}>
             {(p.label as string) ?? "File Upload"}
           </label>
-          <div className="border border-dashed border-gray-300 rounded px-2 py-2 text-xs text-gray-400 text-center">
+          <div className="border border-dashed border-gray-300 rounded px-2 py-1.5 text-xs text-gray-400 text-center bg-gray-50">
             📎 Choose file…
           </div>
         </div>
@@ -378,8 +380,9 @@ function ComponentPreview({ node }: { node: SchemaNode }) {
 
     case "section":
       return (
-        <div className="text-xs text-gray-500">
-          📦 Section: <strong>{(p.title as string) ?? ""}</strong>
+        <div className="flex items-center justify-between text-xs text-gray-500 bg-gray-50 rounded px-2 py-1">
+          <span>📦 Section: <strong>{(p.title as string) ?? ""}</strong></span>
+          <span className="text-gray-400 text-xs ml-2">{p.collapsible !== false ? "▲ collapsible" : ""}</span>
         </div>
       );
 

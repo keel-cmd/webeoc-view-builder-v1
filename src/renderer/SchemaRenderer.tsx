@@ -28,37 +28,11 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     // ── Layout ────────────────────────────────────────────────────────────────
 
     case "section":
-      return (
-        <section
-          style={{
-            padding: (p.padding as string) ?? "16px",
-            backgroundColor: (p.backgroundColor as string) ?? "#ffffff",
-            marginBottom: "16px",
-            borderRadius: "6px",
-          }}
-        >
-          {Boolean(p.title) && (
-            <h3 className="text-lg font-semibold mb-3 text-gray-800">
-              {p.title as string}
-            </h3>
-          )}
-          {node.children?.map((child) => (
-            <NodeRenderer key={child.id} node={child} />
-          ))}
-        </section>
-      );
+      return <SectionRenderer node={node} />;
 
     case "row":
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: (p.gap as string) ?? "8px",
-            alignItems: (p.alignItems as string) ?? "stretch",
-            marginBottom: "8px",
-          }}
-        >
+        <div className="form-row mb-2">
           {node.children?.map((child) => (
             <NodeRenderer key={child.id} node={child} />
           ))}
@@ -90,46 +64,85 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
 
     // ── Form ──────────────────────────────────────────────────────────────────
 
-    case "text-input":
+    case "text-input": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Text Input";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean} helperText={p.helperText as string}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <input
+            id={node.id}
+            name={node.id}
             type="text"
+            className="form-control"
             placeholder={(p.placeholder as string) ?? ""}
             maxLength={p.maxLength as number | undefined}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </FormField>
+          {Boolean(p.helperText) && <small className="form-text text-muted">{p.helperText as string}</small>}
+        </div>
       );
+    }
 
-    case "textarea":
+    case "textarea": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Text Area";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean} helperText={p.helperText as string}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <textarea
+            id={node.id}
+            name={node.id}
+            className="form-control"
             placeholder={(p.placeholder as string) ?? ""}
             rows={(p.rows as number) ?? 4}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </FormField>
+          {Boolean(p.helperText) && <small className="form-text text-muted">{p.helperText as string}</small>}
+        </div>
       );
+    }
 
-    case "number-input":
+    case "number-input": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Number";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <input
+            id={node.id}
+            name={node.id}
             type="number"
+            className="form-control"
             placeholder={(p.placeholder as string) ?? ""}
             min={p.min as number | undefined}
             max={p.max as number | undefined}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </FormField>
+        </div>
       );
+    }
 
-    case "dropdown":
+    case "dropdown": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Dropdown";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean} helperText={p.helperText as string}>
-          <select className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
+          <select id={node.id} name={node.id} className="form-control">
             <option value="">Select…</option>
             {(Array.isArray(p.options) ? p.options : String(p.options ?? "").split(","))
               .map((opt: string) => (
@@ -138,80 +151,152 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
                 </option>
               ))}
           </select>
-        </FormField>
+          {Boolean(p.helperText) && <small className="form-text text-muted">{p.helperText as string}</small>}
+        </div>
       );
+    }
 
-    case "checkbox":
+    case "checkbox": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Checkbox";
+      const required = Boolean(p.required);
       return (
-        <FormField helperText={p.helperText as string}>
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="checkbox" className="w-4 h-4 rounded" />
-            <span>
-              {p.label as string}
-              {Boolean(p.required) && <span className="text-red-500 ml-1">*</span>}
-            </span>
-          </label>
-        </FormField>
-      );
-
-    case "radio":
-      return (
-        <FormField label={p.label as string} required={p.required as boolean}>
-          <div className="space-y-1">
-            {(Array.isArray(p.options) ? p.options : String(p.options ?? "").split(","))
-              .map((opt: string) => (
-                <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="radio" name={node.id} value={opt.trim()} className="w-4 h-4" />
-                  <span>{opt.trim()}</span>
-                </label>
-              ))}
+        <div className={`form-group bmd-form-group ${col}`}>
+          <div className="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              className="custom-control-input"
+              id={node.id}
+              name={node.id}
+            />
+            <label className="custom-control-label" htmlFor={node.id}>
+              {label}
+              {required && <span className="text-danger ml-1">*</span>}
+            </label>
           </div>
-        </FormField>
+          {Boolean(p.helperText) && <small className="form-text text-muted">{p.helperText as string}</small>}
+        </div>
       );
+    }
 
-    case "date-input":
+    case "radio": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Radio Group";
+      const required = Boolean(p.required);
+      const options = Array.isArray(p.options)
+        ? p.options
+        : String(p.options ?? "").split(",");
       return (
-        <FormField label={p.label as string} required={p.required as boolean} helperText={p.helperText as string}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
+          {options.map((opt: string) => (
+            <div key={opt} className="custom-control custom-radio">
+              <input
+                type="radio"
+                className="custom-control-input"
+                id={`${node.id}-${opt.trim()}`}
+                name={node.id}
+                value={opt.trim()}
+              />
+              <label
+                className="custom-control-label"
+                htmlFor={`${node.id}-${opt.trim()}`}
+              >
+                {opt.trim()}
+              </label>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case "date-input": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Date";
+      const required = Boolean(p.required);
+      return (
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <input
+            id={node.id}
+            name={node.id}
             type="date"
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-control"
           />
-        </FormField>
+          {Boolean(p.helperText) && <small className="form-text text-muted">{p.helperText as string}</small>}
+        </div>
       );
+    }
 
-    case "email-input":
+    case "email-input": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Email";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <input
+            id={node.id}
+            name={node.id}
             type="email"
+            className="form-control"
             placeholder={(p.placeholder as string) ?? ""}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </FormField>
+        </div>
       );
+    }
 
-    case "phone-input":
+    case "phone-input": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "Phone";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <input
+            id={node.id}
+            name={node.id}
             type="tel"
+            className="form-control"
             placeholder={(p.placeholder as string) ?? ""}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </FormField>
+        </div>
       );
+    }
 
-    case "file-upload":
+    case "file-upload": {
+      const col = (p.col as string) ?? "col-6";
+      const label = (p.label as string) ?? "File Upload";
+      const required = Boolean(p.required);
       return (
-        <FormField label={p.label as string} required={p.required as boolean}>
+        <div className={`form-group bmd-form-group ${col}`}>
+          <label htmlFor={node.id} className="">
+            {label}
+            {required && <span className="text-danger ml-1">*</span>}
+          </label>
           <input
+            id={node.id}
+            name={node.id}
             type="file"
+            className="form-control"
             accept={(p.accept as string) ?? "*"}
             multiple={(p.multiple as boolean) ?? false}
-            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
-        </FormField>
+        </div>
       );
+    }
 
     // ── Display ───────────────────────────────────────────────────────────────
 
@@ -261,27 +346,46 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
-function FormField({
-  label,
-  required,
-  helperText,
-  children,
-}: {
-  label?: string;
-  required?: boolean;
-  helperText?: string;
-  children: React.ReactNode;
-}) {
+function SectionRenderer({ node }: { node: SchemaNode }) {
+  const p = node.props as Record<string, unknown>;
+  const title = (p.title as string) ?? "Section";
+  const collapsible = p.collapsible !== false;
+  const [collapsed, setCollapsed] = useState(Boolean(p.defaultCollapsed));
+
+  function toggle() {
+    if (collapsible) setCollapsed((c) => !c);
+  }
+
   return (
-    <div className="mb-4">
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
+    <div className="card form-section mb-3">
+      <div
+        className="card-header d-flex justify-content-between align-items-center"
+        onClick={toggle}
+        style={{ cursor: collapsible ? "pointer" : "default" }}
+      >
+        <h6 className="mb-0 section-title">{title}</h6>
+        {collapsible && (
+          <button
+            type="button"
+            className="btn btn-link btn-sm p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggle();
+            }}
+          >
+            <i className={`fa fa-chevron-${collapsed ? "down" : "up"}`}></i>
+          </button>
+        )}
+      </div>
+      {!collapsed && (
+        <div className="card-body">
+          <div className="form-row">
+            {node.children?.map((child) => (
+              <NodeRenderer key={child.id} node={child} />
+            ))}
+          </div>
+        </div>
       )}
-      {children}
-      {helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
     </div>
   );
 }
@@ -292,23 +396,23 @@ function TabsRenderer({ node }: { node: SchemaNode }) {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden mb-4">
-      <div className="flex border-b border-gray-200 bg-gray-50">
-        {tabs.map((tab: string, i: number) => (
-          <button
-            key={i}
-            onClick={() => setActiveTab(i)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === i
-                ? "bg-white border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            {tab.trim()}
-          </button>
-        ))}
+    <div className="card mb-3">
+      <div className="card-header">
+        <ul className="nav nav-tabs card-header-tabs">
+          {tabs.map((tab: string, i: number) => (
+            <li key={i} className="nav-item">
+              <button
+                className={`nav-link${activeTab === i ? " active" : ""}`}
+                onClick={() => setActiveTab(i)}
+                type="button"
+              >
+                {tab.trim()}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-      <div className="p-4">
+      <div className="card-body">
         {node.children
           ?.filter((_, i) => i === activeTab)
           .map((child) => (
@@ -325,25 +429,23 @@ function PanelRenderer({ node }: { node: SchemaNode }) {
 
   return (
     <div
-      className="border rounded-lg mb-4 overflow-hidden"
+      className="card mb-3"
       style={{ borderColor: (p.borderColor as string) ?? "#e5e7eb" }}
     >
-      <div
-        className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b"
-        style={{ borderColor: (p.borderColor as string) ?? "#e5e7eb" }}
-      >
-        <h4 className="font-medium text-gray-800 text-sm">{(p.title as string) ?? "Panel"}</h4>
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h6 className="mb-0">{(p.title as string) ?? "Panel"}</h6>
         {Boolean(p.collapsible) && (
           <button
+            type="button"
+            className="btn btn-link btn-sm p-0"
             onClick={() => setCollapsed((c) => !c)}
-            className="text-gray-400 hover:text-gray-600 text-xs"
           >
             {collapsed ? "▼" : "▲"}
           </button>
         )}
       </div>
       {!collapsed && (
-        <div className="p-4">
+        <div className="card-body">
           {node.children?.map((child) => (
             <NodeRenderer key={child.id} node={child} />
           ))}
@@ -355,22 +457,23 @@ function PanelRenderer({ node }: { node: SchemaNode }) {
 
 function ButtonRenderer({ p }: { p: Record<string, unknown> }) {
   const variantClasses: Record<string, string> = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
-    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
-    danger: "bg-red-600 text-white hover:bg-red-700",
-    ghost: "bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-50",
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    danger: "btn-danger",
+    ghost: "btn-outline-primary",
   };
   const sizeClasses: Record<string, string> = {
-    sm: "px-3 py-1 text-xs",
-    md: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base",
+    sm: "btn-sm",
+    md: "",
+    lg: "btn-lg",
   };
   const variant = (p.variant as string) ?? "primary";
   const size = (p.size as string) ?? "md";
 
   return (
     <button
-      className={`rounded font-medium transition-colors ${variantClasses[variant] ?? variantClasses.primary} ${sizeClasses[size] ?? sizeClasses.md}`}
+      type="button"
+      className={`btn ${variantClasses[variant] ?? variantClasses.primary} ${sizeClasses[size] ?? ""}`.trim()}
     >
       {(p.text as string) ?? "Button"}
     </button>

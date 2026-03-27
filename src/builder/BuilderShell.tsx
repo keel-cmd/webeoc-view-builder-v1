@@ -366,38 +366,62 @@ function InputViewChrome({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-full py-4 px-4 bg-gray-100">
-      <div className="max-w-4xl mx-auto">
-        {/* Navbar */}
-        <nav className="bg-gray-800 text-white rounded-t-lg px-4 py-3 flex items-center gap-3">
-          <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xs text-gray-300 shrink-0">
-            Logo
-          </div>
-          <div>
-            <div className="text-sm font-semibold leading-tight">Add/Edit Record</div>
-            <div className="text-xs text-gray-400 leading-tight">{viewName}</div>
-          </div>
-        </nav>
+    <>
+      {/* Bootstrap CSS + Poppins for preview */}
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css" />
+      <style>{`
+        .form-section-preview, .form-section-preview * { font-family: 'Poppins', sans-serif; }
+        .form-section { border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .form-section .card-header { background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); border-bottom: 2px solid #e8edff; padding: 14px 20px; }
+        .form-section .section-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: #3b4a6b; letter-spacing: 0.3px; }
+        .form-section .card-body { padding: 20px; background: #fff; }
+        .bmd-form-group label { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 500; color: #6b7a9d; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 2px; }
+        .bmd-form-group .form-control { font-family: 'Poppins', sans-serif; border: none; border-bottom: 1.5px solid #c8d0e0; border-radius: 0; padding: 6px 0; background: transparent; font-size: 14px; color: #2d3a56; transition: border-color 0.2s; }
+        .bmd-form-group .form-control:focus { border-bottom-color: #5b7fff; box-shadow: none; outline: none; background: transparent; }
+        .bmd-form-group select.form-control { cursor: pointer; }
+        .custom-control-label { font-family: 'Poppins', sans-serif; font-size: 13px; color: #3b4a6b; }
+        .btn-link { color: #5b7fff; }
+        .btn-link:hover { color: #3a5be0; }
+        .fa-chevron-up:before { content: '▲'; font-style: normal; font-size: 10px; }
+        .fa-chevron-down:before { content: '▼'; font-style: normal; font-size: 10px; }
+      `}</style>
+      <div className="min-h-full py-4 px-4 bg-gray-100 form-section-preview">
+        <div className="max-w-4xl mx-auto">
+          {/* Navbar */}
+          <nav className="bg-gray-800 text-white rounded-t-lg px-4 py-3 flex items-center gap-3">
+            <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xs text-gray-300 shrink-0">
+              Logo
+            </div>
+            <div>
+              <div className="text-sm font-semibold leading-tight">Add/Edit Record</div>
+              <div className="text-xs text-gray-400 leading-tight">{viewName}</div>
+            </div>
+          </nav>
 
-        {/* Form body */}
-        <div className="bg-white border border-gray-300 border-t-0 rounded-b-lg">
-          {/* Form section — this is where dropped components live */}
-          <div className="p-4">
-            {children}
-          </div>
+          {/* Form body */}
+          <div className="bg-white border border-gray-300 border-t-0 rounded-b-lg">
+            {/* Form section — this is where dropped components live */}
+            <div className="p-4">
+              <div className="form-section-preview">
+                {children}
+              </div>
+            </div>
 
-          {/* Footer */}
-          <div className="flex justify-end items-center gap-2 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
-            <button className="px-4 py-1.5 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
-              Cancel
-            </button>
-            <button className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
-              Submit
-            </button>
+            {/* Footer */}
+            <div className="flex justify-end items-center gap-2 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+              <button className="px-4 py-1.5 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
+                Cancel
+              </button>
+              <button className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
