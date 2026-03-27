@@ -5,26 +5,26 @@ import { useDraggable } from "@dnd-kit/core";
 import { getComponentsByCategory } from "@/registry";
 import type { ComponentDefinition } from "@/types";
 
-const CATEGORIES: Array<{ key: ComponentDefinition["category"]; label: string }> = [
-  { key: "layout", label: "Layout" },
-  { key: "form", label: "Form" },
-  { key: "display", label: "Display" },
+const CATEGORIES: Array<{ key: ComponentDefinition["category"]; label: string; color: string }> = [
+  { key: "layout", label: "Layout", color: "text-violet-400" },
+  { key: "form", label: "Form Fields", color: "text-blue-400" },
+  { key: "display", label: "Display", color: "text-emerald-400" },
 ];
 
 export function ComponentSidebar() {
   return (
-    <aside className="w-56 flex-shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto">
-      <div className="p-3 border-b border-gray-200">
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+    <aside className="w-52 flex-shrink-0 bg-slate-900 border-r border-slate-800 overflow-y-auto flex flex-col">
+      <div className="px-4 py-3 border-b border-slate-800 flex-shrink-0">
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
           Components
         </h2>
       </div>
-      <div className="p-2 space-y-4">
-        {CATEGORIES.map(({ key, label }) => {
+      <div className="p-3 space-y-5 flex-1">
+        {CATEGORIES.map(({ key, label, color }) => {
           const components = getComponentsByCategory(key);
           return (
             <div key={key}>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-2 mb-1">
+              <p className={`text-xs font-semibold uppercase tracking-widest px-1 mb-2 ${color}`}>
                 {label}
               </p>
               <div className="space-y-1">
@@ -51,12 +51,14 @@ function DraggablePill({ comp }: { comp: ComponentDefinition }) {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`flex items-center gap-2 px-3 py-2 rounded cursor-grab active:cursor-grabbing text-sm bg-white border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors select-none ${
-        isDragging ? "opacity-40" : ""
-      }`}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-grab active:cursor-grabbing text-sm
+        bg-slate-800 border border-slate-700
+        hover:border-blue-500 hover:bg-slate-750 hover:text-white
+        text-slate-300 transition-all select-none
+        ${isDragging ? "opacity-40 scale-95" : ""}`}
     >
-      <span>{comp.icon}</span>
-      <span className="text-gray-700">{comp.label}</span>
+      <span className="text-base leading-none">{comp.icon}</span>
+      <span className="text-xs font-medium">{comp.label}</span>
     </div>
   );
 }
