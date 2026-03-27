@@ -66,6 +66,10 @@ export interface ScriptResource {
 export interface ViewTypeDefaults {
   links: LinkResource[];
   scripts: ScriptResource[];
+  // Fixed XML injected after <form> opening tag, before the droppable form-section
+  formPreambleXml: string;
+  // Fixed HTML injected before the first <script> tag
+  preScriptHtml: string;
 }
 
 // ─── Project / Persistence ────────────────────────────────────────────────────

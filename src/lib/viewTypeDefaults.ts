@@ -54,6 +54,106 @@ const BUILTIN_DEFAULTS: Record<string, ViewTypeDefaults> = {
       },
       { id: uuidv4(), sourceType: "boardresource", source: "_webeoc_dst_conditional_js", dstGlobal: true },
     ],
+
+    formPreambleXml: `<applytheme/>
+<form aria-label="Data" class="mb-0" id="input-form">
+  <insertfields id="insert_fields">
+    <field name="_webeoc_delete_flag">'no'</field>
+    <field name="edit_datetime">GETUTCDATE()</field>
+    <field name="edit_email">@sessionemail</field>
+    <field name="edit_name">@sessionname</field>
+    <field name="edit_position">@positionname</field>
+    <field name="origin_datetime">GETUTCDATE()</field>
+    <field name="origin_email">@sessionemail</field>
+    <field name="origin_name">@sessionname</field>
+    <field name="origin_position">@positionname</field>
+  </insertfields>
+  <updatefields id="update_fields">
+    <field name="edit_datetime">GETUTCDATE()</field>
+    <field name="edit_email">@sessionemail</field>
+    <field name="edit_name">@sessionname</field>
+    <field name="edit_position">@positionname</field>
+  </updatefields>`,
+
+    preScriptHtml: `<div class="d-none" id="view-data-data">
+  <for-each select="/data/@*">
+    <attribute name="data-{name()}">
+      <value-of select="."/>
+    </attribute>
+  </for-each>
+</div>
+<div class="d-none" id="view-data-session">
+  <for-each select="/data/SessionDetail/Sessions/@*">
+    <attribute name="data-{name()}">
+      <value-of select="."/>
+    </attribute>
+  </for-each>
+</div>
+<div class="d-none" id="view-data-userdetail">
+  <for-each select="/data/userdetail/@*">
+    <attribute name="data-{name()}">
+      <value-of select="."/>
+    </attribute>
+  </for-each>
+</div>
+<div class="d-none" id="view-data-agencyinfo">
+  <for-each select="/data/agencyinfo/@*">
+    <attribute name="data-{name()}">
+      <value-of select="."/>
+    </attribute>
+  </for-each>
+</div>
+<if test="/data/@dataid != 0">
+  <div class="d-none" id="view-data-recorddata">
+    <for-each select="/data/*[starts-with(name(), 'table_')]">
+      <div class="d-none view-data-recorddata">
+        <for-each select="@*">
+          <attribute name="data-{name()}">
+            <value-of select="."/>
+          </attribute>
+        </for-each>
+        <attribute name="data-tablename">
+          <value-of select="local-name()"/>
+        </attribute>
+      </div>
+    </for-each>
+  </div>
+</if>
+<if test="count(/data/ViewParameter) &gt; 0">
+  <div id="view-parameters" class="d-none">
+    <for-each select="/data/ViewParameter">
+      <div class="viewparameter" name="{@name}">
+        <value-of select="."/>
+      </div>
+    </for-each>
+  </div>
+</if>
+<section class="d-none">
+  <h2>Hidden Fields</h2>
+  <div class="form-row">
+    <div class="form-group col-12" id="iwf4vyi">
+      <label class="form-label optional">Group Name</label>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-12" id="ie6rvoi">
+      <label class="form-label optional">User Data Holder</label>
+      <br/>
+      <span id="user-data-holder" data-dataid="{/data/@dataid}" data-username="{/data/@username}" data-sessionname="{/data/SessionDetail/Sessions/@name}" data-realname="{/data/userdetail/@realname}" data-positionname="{/data/@positionname}">
+        <for-each select="/data/*[starts-with(name(), 'table_') and name() != concat('table_', /data/@tableid)]">
+          <if test="not(preceding-sibling::*[starts-with(name(), 'table_') and name() != concat('table_', /data/@tableid) and name() = name(current())])">
+            <attribute name="data-{name()}">
+              <for-each select="/data/*[name() = name(current())]">
+                <if test="position() &gt; 1">, </if>
+                <value-of select="@team_name"/>
+              </for-each>
+            </attribute>
+          </if>
+        </for-each>
+      </span>
+    </div>
+  </div>
+</section>`,
   },
 };
 
@@ -75,7 +175,7 @@ function saveAll(data: Record<string, ViewTypeDefaults>) {
 
 export function getViewTypeDefaults(viewTypeId: string): ViewTypeDefaults {
   const stored = loadAll();
-  return stored[viewTypeId] ?? BUILTIN_DEFAULTS[viewTypeId] ?? { links: [], scripts: [] };
+  return stored[viewTypeId] ?? BUILTIN_DEFAULTS[viewTypeId] ?? { links: [], scripts: [], formPreambleXml: "", preScriptHtml: "" };
 }
 
 export function saveViewTypeDefaults(viewTypeId: string, defaults: ViewTypeDefaults) {

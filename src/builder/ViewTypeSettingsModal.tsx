@@ -15,7 +15,7 @@ const TABS = [
 
 export function ViewTypeSettingsModal({ onClose }: { onClose: () => void }) {
   const [activeTab, setActiveTab] = useState(TABS[0].id);
-  const [defaults, setDefaults] = useState<ViewTypeDefaults>({ links: [], scripts: [] });
+  const [defaults, setDefaults] = useState<ViewTypeDefaults>({ links: [], scripts: [], formPreambleXml: "", preScriptHtml: "" });
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
@@ -68,6 +68,11 @@ export function ViewTypeSettingsModal({ onClose }: { onClose: () => void }) {
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto bg-gray-800 border border-gray-700 mx-6 rounded-b-lg rounded-tr-lg p-5 space-y-6">
+          <XmlSnippetSection
+            title="Form preamble"
+            description="Injected inside the <form> tag before the droppable field section (applytheme, insertfields, updatefields)"
+            xml={defaults.formPreambleXml}
+          />
           <LinkSection
             links={defaults.links}
             onChange={(links) => update({ ...defaults, links })}
@@ -75,6 +80,11 @@ export function ViewTypeSettingsModal({ onClose }: { onClose: () => void }) {
           <ScriptSection
             scripts={defaults.scripts}
             onChange={(scripts) => update({ ...defaults, scripts })}
+          />
+          <XmlSnippetSection
+            title="Pre-script HTML"
+            description="Injected before the first <script> tag (hidden data divs, user-data-holder, view parameters)"
+            xml={defaults.preScriptHtml}
           />
         </div>
 
@@ -389,6 +399,42 @@ function ScriptSection({
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ─── Read-only XML snippet section ───────────────────────────────────────────
+
+function XmlSnippetSection({
+  title,
+  description,
+  xml,
+}: {
+  title: string;
+  description: string;
+  xml: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-gray-200">
+          {title}
+          <span className="ml-2 text-xs font-normal text-gray-500">{description}</span>
+        </h3>
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-400 rounded-lg transition-colors"
+        >
+          {expanded ? "Hide" : "View"}
+        </button>
+      </div>
+      {expanded && (
+        <pre className="bg-gray-900 border border-gray-700 rounded-lg p-3 text-xs text-green-400 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed">
+          {xml}
+        </pre>
+      )}
     </div>
   );
 }
