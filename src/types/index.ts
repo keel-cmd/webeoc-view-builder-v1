@@ -39,6 +39,35 @@ export interface ComponentDefinition {
   acceptsChildren?: boolean;
 }
 
+// ─── Resource entries (links / scripts appended after base template) ──────────
+
+export interface LinkResource {
+  id: string;
+  sourceType: "boardresource" | "href";
+  source: string;    // boardresource filename or full URL
+  rel?: string;      // defaults to "stylesheet"
+  type?: string;     // e.g. "text/css"
+  media?: string;
+}
+
+export interface ScriptResource {
+  id: string;
+  sourceType: "boardresource" | "src";
+  source: string;    // boardresource filename or full URL
+  type?: string;     // e.g. "text/javascript"
+  integrity?: string;
+  crossorigin?: string;
+  referrerpolicy?: string;
+  async?: boolean;
+  defer?: boolean;
+  dstGlobal?: boolean;  // data-dst-global="true"
+}
+
+export interface ViewTypeDefaults {
+  links: LinkResource[];
+  scripts: ScriptResource[];
+}
+
 // ─── Project / Persistence ────────────────────────────────────────────────────
 
 export interface ProjectSchema {
@@ -46,6 +75,8 @@ export interface ProjectSchema {
   name: string;
   description?: string;
   viewType?: string;
+  links?: LinkResource[];
+  scripts?: ScriptResource[];
   rootNodes: SchemaNode[];
   createdAt?: string;
   updatedAt?: string;

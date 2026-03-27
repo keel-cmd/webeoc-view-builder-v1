@@ -16,8 +16,11 @@ import { ComponentSidebar } from "./ComponentSidebar";
 import { BuilderCanvas } from "./BuilderCanvas";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { SchemaRenderer } from "@/renderer/SchemaRenderer";
+import { signOut, useSession } from "next-auth/react";
 import { getComponent } from "@/registry";
 import type { ProjectSchema } from "@/types";
+import { getViewTypeDefaults } from "@/lib/viewTypeDefaults";
+import { ViewTypeSettingsModal } from "./ViewTypeSettingsModal";
 
 // ─── View type definitions (add more here as needed) ─────────────────────────
 
@@ -52,12 +55,14 @@ export function BuilderShell() {
 // ─── Inner (has access to context) ───────────────────────────────────────────
 
 function BuilderInner() {
+  const { data: session } = useSession();
   const { state, addNode, moveNode, setSchema, setProjectName, markSaved } = useBuilder();
   const [mode, setMode] = useState<"build" | "preview">("build");
   const [saving, setSaving] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [showNewViewWizard, setShowNewViewWizard] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -191,6 +196,13 @@ function BuilderInner() {
           >
             + New View
           </button>
+          <button
+            onClick={() => setShowSettings(true)}
+            className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+            title="View Type Settings"
+          >
+            ⚙ Settings
+          </button>
 
           {/* Mode toggle */}
           <div className="flex rounded-lg bg-gray-700 p-0.5">
@@ -237,6 +249,20 @@ function BuilderInner() {
           >
             {saving ? "Saving…" : "💾 Save"}
           </button>
+
+          {session?.user && (
+            <div className="flex items-center gap-2 ml-2 pl-2 border-l border-gray-700">
+              <span className="text-xs text-gray-400 hidden sm:block">
+                {session.user.name ?? session.user.email}
+              </span>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -294,12 +320,18 @@ function BuilderInner() {
         onChange={handleImportFile}
       />
 
+      {/* View type settings */}
+      {showSettings && (
+        <ViewTypeSettingsModal onClose={() => setShowSettings(false)} />
+      )}
+
       {/* New view wizard */}
       {showNewViewWizard && (
         <NewViewWizardModal
           onClose={() => setShowNewViewWizard(false)}
           onCreate={(name, viewType) => {
-            setSchema({ id: uuidv4(), name, description: "", viewType, rootNodes: [] });
+            const { links, scripts } = getViewTypeDefaults(viewType);
+            setSchema({ id: uuidv4(), name, description: "", viewType, links, scripts, rootNodes: [] });
             setProjectId(null);
             setMode("build");
             setShowNewViewWizard(false);
