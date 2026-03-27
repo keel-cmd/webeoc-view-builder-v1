@@ -3,6 +3,39 @@
 import React, { useState } from "react";
 import type { SchemaNode } from "@/types";
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Parse a CSS string like "color: red; margin: 8px" into a React style object */
+function parseStyle(style: string | undefined): React.CSSProperties {
+  if (!style) return {};
+  const result: Record<string, string> = {};
+  style.split(";").forEach((rule) => {
+    const colonIdx = rule.indexOf(":");
+    if (colonIdx === -1) return;
+    const prop = rule.slice(0, colonIdx).trim();
+    const val = rule.slice(colonIdx + 1).trim();
+    if (prop && val) {
+      const camel = prop.replace(/-([a-z])/g, (_, l: string) => l.toUpperCase());
+      result[camel] = val;
+    }
+  });
+  return result as React.CSSProperties;
+}
+
+type AttrPair = { key: string; value: string };
+
+/** Build a props object with data-* and custom attributes from node props */
+function extraAttrs(p: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  ((p.dataAttributes as AttrPair[]) ?? []).forEach(({ key, value }) => {
+    if (key) out[`data-${key}`] = value;
+  });
+  ((p.customAttributes as AttrPair[]) ?? []).forEach(({ key, value }) => {
+    if (key) out[key] = value;
+  });
+  return out;
+}
+
 // ─── Renderer Entry ───────────────────────────────────────────────────────────
 
 interface RendererProps {
@@ -65,11 +98,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     // ── Form ──────────────────────────────────────────────────────────────────
 
     case "text-input": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Text Input";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -88,11 +125,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "textarea": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Text Area";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -110,11 +151,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "number-input": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Number";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -133,11 +178,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "dropdown": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Dropdown";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -157,11 +206,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "checkbox": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Checkbox";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <div className="custom-control custom-checkbox">
             <input
               type="checkbox"
@@ -180,14 +233,18 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "radio": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Radio Group";
       const required = Boolean(p.required);
       const options = Array.isArray(p.options)
         ? p.options
         : String(p.options ?? "").split(",");
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -214,11 +271,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "date-input": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Date";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -235,11 +296,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "email-input": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Email";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -256,11 +321,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "phone-input": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "Phone";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
@@ -277,11 +346,15 @@ export function NodeRenderer({ node }: { node: SchemaNode }) {
     }
 
     case "file-upload": {
-      const col = (p.col as string) ?? "col-6";
+      const col = (p.col as string) ?? "col-md-12";
       const label = (p.label as string) ?? "File Upload";
       const required = Boolean(p.required);
       return (
-        <div className={`form-group bmd-form-group ${col}`}>
+        <div
+          className={`form-group bmd-form-group ${col}${p.customClasses ? " " + (p.customClasses as string) : ""}`}
+          style={parseStyle(p.inlineStyle as string | undefined)}
+          {...extraAttrs(p)}
+        >
           <label htmlFor={node.id} className="">
             {label}
             {required && <span className="text-danger ml-1">*</span>}
