@@ -45,6 +45,7 @@ export interface ProjectSchema {
   id?: string;
   name: string;
   description?: string;
+  viewType?: string;
   rootNodes: SchemaNode[];
   createdAt?: string;
   updatedAt?: string;

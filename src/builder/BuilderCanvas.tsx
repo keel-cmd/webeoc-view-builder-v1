@@ -10,6 +10,19 @@ import { useBuilder } from "./BuilderContext";
 
 export function BuilderCanvas() {
   const { state, selectNode } = useBuilder();
+  const viewType = state.schema.viewType;
+
+  if (viewType === "input") {
+    return <InputViewCanvas />;
+  }
+
+  return <PlainCanvas />;
+}
+
+// ─── Plain canvas (no view type / legacy) ────────────────────────────────────
+
+function PlainCanvas() {
+  const { state, selectNode } = useBuilder();
   const { setNodeRef, isOver } = useDroppable({ id: "root-canvas" });
 
   return (
@@ -37,10 +50,76 @@ export function BuilderCanvas() {
           <CanvasNode key={node.id} node={node} parentId={null} index={idx} />
         ))}
       </div>
-      {/* Drop zone at the end of root */}
-      {state.schema.rootNodes.length > 0 && (
-        <RootDropZone />
-      )}
+      {state.schema.rootNodes.length > 0 && <RootDropZone />}
+    </div>
+  );
+}
+
+// ─── Input view canvas (WebEOC chrome wrapper) ────────────────────────────────
+
+function InputViewCanvas() {
+  const { state, selectNode } = useBuilder();
+  const { setNodeRef, isOver } = useDroppable({ id: "root-canvas" });
+  const viewName = state.schema.name;
+
+  return (
+    <div
+      className="flex-1 overflow-y-auto bg-gray-200 py-4 px-4"
+      onClick={() => selectNode(null)}
+    >
+      <div className="max-w-4xl mx-auto">
+        {/* Navbar chrome */}
+        <nav className="bg-gray-800 text-white rounded-t-lg px-4 py-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xs text-gray-300 shrink-0">
+            Logo
+          </div>
+          <div>
+            <div className="text-sm font-semibold leading-tight">Add/Edit Record</div>
+            <div className="text-xs text-gray-400 leading-tight">{viewName}</div>
+          </div>
+        </nav>
+
+        {/* Form body */}
+        <div className="bg-white border border-gray-300 border-t-0 rounded-b-lg">
+          {/* Droppable form-section */}
+          <div
+            ref={setNodeRef}
+            className={`p-4 min-h-48 transition-colors rounded-b-lg ${
+              isOver ? "bg-blue-50" : ""
+            }`}
+          >
+            {state.schema.rootNodes.length === 0 ? (
+              <div
+                className={`border-2 border-dashed rounded-xl flex items-center justify-center h-40 text-gray-400 transition-colors ${
+                  isOver ? "border-blue-400 text-blue-400" : "border-gray-300"
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-1">⊕</div>
+                  <p className="text-sm">Drag fields into the form section</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {state.schema.rootNodes.map((node, idx) => (
+                  <CanvasNode key={node.id} node={node} parentId={null} index={idx} />
+                ))}
+                <RootDropZone />
+              </div>
+            )}
+          </div>
+
+          {/* Footer chrome */}
+          <div className="flex justify-end items-center gap-2 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+            <button className="px-4 py-1.5 text-sm border border-blue-600 text-blue-600 rounded cursor-default">
+              Cancel
+            </button>
+            <button className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded cursor-default">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

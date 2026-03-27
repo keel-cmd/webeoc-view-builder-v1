@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import { v4 as uuidv4 } from "uuid";
 import { BuilderProvider, useBuilder } from "./BuilderContext";
 import { ComponentSidebar } from "./ComponentSidebar";
 import { BuilderCanvas } from "./BuilderCanvas";
@@ -17,6 +18,26 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { SchemaRenderer } from "@/renderer/SchemaRenderer";
 import { getComponent } from "@/registry";
 import type { ProjectSchema } from "@/types";
+
+// ─── View type definitions (add more here as needed) ─────────────────────────
+
+interface ViewTypeDefinition {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  namePrefix: string;
+}
+
+const VIEW_TYPES: ViewTypeDefinition[] = [
+  {
+    id: "input",
+    label: "Input View",
+    description: "Collect data through form fields",
+    icon: "📝",
+    namePrefix: "Input-",
+  },
+];
 
 // ─── Shell ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +57,7 @@ function BuilderInner() {
   const [saving, setSaving] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [showLoadModal, setShowLoadModal] = useState(false);
+  const [showNewViewWizard, setShowNewViewWizard] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -163,6 +185,13 @@ function BuilderInner() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowNewViewWizard(true)}
+            className="px-3 py-1.5 text-xs bg-green-600 hover:bg-green-700 rounded-lg transition-colors font-medium"
+          >
+            + New View
+          </button>
+
           {/* Mode toggle */}
           <div className="flex rounded-lg bg-gray-700 p-0.5">
             <button
@@ -228,22 +257,31 @@ function BuilderInner() {
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="flex-1 overflow-y-auto bg-white">
-          <div className="max-w-4xl mx-auto p-8">
-            <div className="mb-6 pb-4 border-b border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900">{state.schema.name}</h1>
-              {state.schema.description && (
-                <p className="text-gray-500 mt-1">{state.schema.description}</p>
+        <div className="flex-1 overflow-y-auto bg-gray-100">
+          {state.schema.viewType === "input" ? (
+            <InputViewChrome viewName={state.schema.name}>
+              <SchemaRenderer nodes={state.schema.rootNodes} />
+              {state.schema.rootNodes.length === 0 && (
+                <p className="text-sm text-gray-400 italic">No fields added yet. Switch to Build mode.</p>
+              )}
+            </InputViewChrome>
+          ) : (
+            <div className="max-w-4xl mx-auto p-8 bg-white">
+              <div className="mb-6 pb-4 border-b border-gray-200">
+                <h1 className="text-2xl font-bold text-gray-900">{state.schema.name}</h1>
+                {state.schema.description && (
+                  <p className="text-gray-500 mt-1">{state.schema.description}</p>
+                )}
+              </div>
+              <SchemaRenderer nodes={state.schema.rootNodes} />
+              {state.schema.rootNodes.length === 0 && (
+                <div className="text-center text-gray-400 py-16">
+                  <div className="text-4xl mb-2">📋</div>
+                  <p>No components added yet. Switch to Build mode to add components.</p>
+                </div>
               )}
             </div>
-            <SchemaRenderer nodes={state.schema.rootNodes} />
-            {state.schema.rootNodes.length === 0 && (
-              <div className="text-center text-gray-400 py-16">
-                <div className="text-4xl mb-2">📋</div>
-                <p>No components added yet. Switch to Build mode to add components.</p>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
 
@@ -255,6 +293,19 @@ function BuilderInner() {
         className="hidden"
         onChange={handleImportFile}
       />
+
+      {/* New view wizard */}
+      {showNewViewWizard && (
+        <NewViewWizardModal
+          onClose={() => setShowNewViewWizard(false)}
+          onCreate={(name, viewType) => {
+            setSchema({ id: uuidv4(), name, description: "", viewType, rootNodes: [] });
+            setProjectId(null);
+            setMode("build");
+            setShowNewViewWizard(false);
+          }}
+        />
+      )}
 
       {/* Load projects modal */}
       {showLoadModal && (
@@ -271,6 +322,53 @@ function BuilderInner() {
   );
 }
 
+// ─── WebEOC Input View chrome ─────────────────────────────────────────────────
+// Renders the fixed navbar, form container, and footer that surround the
+// droppable form-section in both canvas and preview modes.
+
+function InputViewChrome({
+  viewName,
+  children,
+}: {
+  viewName: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-full py-4 px-4 bg-gray-100">
+      <div className="max-w-4xl mx-auto">
+        {/* Navbar */}
+        <nav className="bg-gray-800 text-white rounded-t-lg px-4 py-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xs text-gray-300 shrink-0">
+            Logo
+          </div>
+          <div>
+            <div className="text-sm font-semibold leading-tight">Add/Edit Record</div>
+            <div className="text-xs text-gray-400 leading-tight">{viewName}</div>
+          </div>
+        </nav>
+
+        {/* Form body */}
+        <div className="bg-white border border-gray-300 border-t-0 rounded-b-lg">
+          {/* Form section — this is where dropped components live */}
+          <div className="p-4">
+            {children}
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end items-center gap-2 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+            <button className="px-4 py-1.5 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
+              Cancel
+            </button>
+            <button className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Drag overlay ─────────────────────────────────────────────────────────────
 
 function DragOverlayContent({ type }: { type: string }) {
@@ -278,6 +376,139 @@ function DragOverlayContent({ type }: { type: string }) {
   return (
     <div className="bg-white border-2 border-blue-400 rounded-lg px-3 py-2 text-sm shadow-lg pointer-events-none">
       {def?.icon} {def?.label ?? type}
+    </div>
+  );
+}
+
+// ─── New view wizard modal ────────────────────────────────────────────────────
+
+function NewViewWizardModal({
+  onClose,
+  onCreate,
+}: {
+  onClose: () => void;
+  onCreate: (name: string, viewType: string) => void;
+}) {
+  const [step, setStep] = useState<1 | 2>(1);
+  const [selectedType, setSelectedType] = useState<ViewTypeDefinition | null>(null);
+  const [viewName, setViewName] = useState("");
+  const [nameOverridden, setNameOverridden] = useState(false);
+
+  function handleSelectType(vt: ViewTypeDefinition) {
+    setSelectedType(vt);
+    if (!nameOverridden) setViewName(vt.namePrefix);
+    setStep(2);
+  }
+
+  function handleNameChange(val: string) {
+    setViewName(val);
+    setNameOverridden(true);
+  }
+
+  function handleBack() {
+    setStep(1);
+    setSelectedType(null);
+    setNameOverridden(false);
+  }
+
+  function handleCreate() {
+    if (viewName.trim() && selectedType) onCreate(viewName.trim(), selectedType.id);
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+          <div className="flex items-center gap-3">
+            {step === 2 && (
+              <button
+                onClick={handleBack}
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                ← Back
+              </button>
+            )}
+            <h2 className="font-semibold text-white text-lg">
+              {step === 1 ? "Create a New View" : "Name Your View"}
+            </h2>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl leading-none">
+            ✕
+          </button>
+        </div>
+
+        {/* Step indicator */}
+        <div className="flex items-center gap-2 px-6 pt-4">
+          {[1, 2].map((s) => (
+            <React.Fragment key={s}>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                  step >= s ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-400"
+                }`}
+              >
+                {s}
+              </div>
+              {s < 2 && <div className={`flex-1 h-px ${step > s ? "bg-blue-600" : "bg-gray-700"}`} />}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Body */}
+        <div className="p-6">
+          {step === 1 && (
+            <div>
+              <p className="text-gray-400 text-sm mb-5">What kind of view do you want to build?</p>
+              <div className="grid grid-cols-2 gap-3">
+                {VIEW_TYPES.map((vt) => (
+                  <button
+                    key={vt.id}
+                    onClick={() => handleSelectType(vt)}
+                    className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-gray-700 hover:border-blue-500 hover:bg-gray-800 transition-all text-left group"
+                  >
+                    <span className="text-3xl">{vt.icon}</span>
+                    <div>
+                      <p className="font-semibold text-white text-sm group-hover:text-blue-300">
+                        {vt.label}
+                      </p>
+                      <p className="text-gray-400 text-xs mt-0.5">{vt.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 2 && selectedType && (
+            <div>
+              <p className="text-gray-400 text-sm mb-5">
+                Give your <span className="text-white font-medium">{selectedType.label}</span> a name.
+                It defaults to the <span className="font-mono text-blue-300">{selectedType.namePrefix}</span> prefix
+                but you can change it to anything.
+              </p>
+              <label className="block text-sm text-gray-300 mb-1.5">View Name</label>
+              <input
+                type="text"
+                value={viewName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                autoFocus
+                placeholder={`${selectedType.namePrefix}My View`}
+                className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm"
+              />
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={handleCreate}
+                  disabled={!viewName.trim()}
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  Create View
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
